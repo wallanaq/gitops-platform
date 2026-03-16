@@ -1,0 +1,84 @@
+# values.yaml — ArgoCD on local cluster (OrbStack)
+# Chart: argo/argo-cd  version 9.x  (ArgoCD v3.x)
+# Reference: https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+
+# ─────────────────────────────────────────────
+# Server (argocd-server)
+# ─────────────────────────────────────────────
+server:
+  # In a local lab, TLS between the ingress and the pod is not needed.
+  # This flag disables internal HTTPS so a plain HTTP ingress works.
+  extraArgs:
+    - --insecure
+
+  service:
+    type: ClusterIP   # accessed via port-forward or ingress; no NodePort needed
+
+  # Native Helm ingress disabled — using Istio Gateway + VirtualService instead.
+  # See infra/argocd/gateway.yaml
+  ingress:
+    enabled: false
+
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# ─────────────────────────────────────────────
+# Redis (state cache)
+# ─────────────────────────────────────────────
+redis:
+  enabled: true       # uses the chart's built-in Redis (sufficient for a lab)
+
+# ─────────────────────────────────────────────
+# Global logging settings
+# ─────────────────────────────────────────────
+global:
+  logging:
+    level: info       # debug | info | warn | error
+
+# ─────────────────────────────────────────────
+# Repo Server (clones and renders manifests)
+# ─────────────────────────────────────────────
+repoServer:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+# ─────────────────────────────────────────────
+# Application Set Controller
+# ─────────────────────────────────────────────
+applicationSet:
+  enabled: true       # allows using ApplicationSets in the future
+
+# ─────────────────────────────────────────────
+# Notifications Controller (optional)
+# ─────────────────────────────────────────────
+notifications:
+  enabled: false      # disabled for now; enable when alerts are needed
+
+# ─────────────────────────────────────────────
+# Dex (built-in SSO / OIDC provider)
+# ─────────────────────────────────────────────
+dex:
+  enabled: false      # SSO is not needed in a local lab
+
+# ─────────────────────────────────────────────
+# Controller — conservative resource limits for laptop
+# ─────────────────────────────────────────────
+controller:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

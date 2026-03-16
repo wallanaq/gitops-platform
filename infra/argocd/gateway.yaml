@@ -1,0 +1,36 @@
+# Gateway — Istio entry point for external traffic
+# Selects the istio-ingressgateway pod via label istio: ingressgateway
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: argocd-gateway
+  namespace: argocd
+spec:
+  selector:
+    istio: ingressgateway   # points to the istio-ingressgateway pod
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "argocd.192.168.139.2.nip.io"
+---
+# VirtualService — routing rules inside the mesh
+# Receives traffic from the Gateway above and forwards to the argocd-server Service
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: argocd-vs
+  namespace: argocd
+spec:
+  hosts:
+    - "argocd.192.168.139.2.nip.io"
+  gateways:
+    - argocd-gateway
+  http:
+    - route:
+        - destination:
+            host: argocd-server   # Service name inside the argocd namespace
+            port:
+              number: 80
