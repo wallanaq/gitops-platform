@@ -1,0 +1,27 @@
+# values.yaml — istio/istiod (control plane)
+# Reference: https://istio.io/latest/docs/setup/install/helm/
+
+pilot:
+  # Conservative resource limits for laptop
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  # Trace sampling: 100% in the lab to capture all traces
+  traceSampling: 100.0
+
+meshConfig:
+  # Enable per-request access logs from each sidecar
+  accessLogFile: /dev/stdout
+
+  # Default mTLS mode between services:
+  # STRICT     = only mTLS accepted (recommended for production)
+  # PERMISSIVE = accepts both mTLS and plain HTTP (easier for gradual adoption in the lab)
+  defaultConfig:
+    holdApplicationUntilProxyStarts: true  # sidecar starts before the app
+
+  trustDomain: cluster.local

@@ -1,0 +1,5 @@
+# values.yaml — istio/base
+# Installs Istio CRDs (VirtualService, Gateway, DestinationRule, etc.)
+# Must be installed before istiod.
+
+defaultRevision: default

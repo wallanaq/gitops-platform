@@ -1,0 +1,20 @@
+# values.yaml — istio/gateway (Ingress Gateway)
+# Separate pod from istiod that receives external traffic and routes it into the mesh.
+# Reference: https://istio.io/latest/docs/tasks/traffic-management/ingress/
+
+service:
+  # OrbStack assigns a real IP to LoadBalancer services — accessible directly from macOS
+  type: LoadBalancer
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
+
+# Label used by Gateway resources to select this pod
+labels:
+  istio: ingressgateway
+  app: istio-ingressgateway
