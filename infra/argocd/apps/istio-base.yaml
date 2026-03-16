@@ -23,6 +23,13 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
+  # istiod dynamically injects caBundle into ValidatingWebhookConfigurations at runtime.
+  # Ignoring this field prevents a permanent OutOfSync caused by live cluster state.
+  ignoreDifferences:
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+      jsonPointers:
+        - /webhooks/0/clientConfig/caBundle
   syncPolicy:
     automated:
       prune: true
